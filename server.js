@@ -1,47 +1,49 @@
 var express = require('express');
 var app = express();
-var moment = require('moment')
+var moment = require('moment');
+var path = require('path');
+
+app.use(express.static(path.join(__dirname, 'html')));
 
 app.get('/', (req, res) => {
-  	res.send('Hello World and shitd');
+    res.sendFile('./html/index.html');
 });
 
 app.get(/./g, (req, res) => {
 
-	const inputIsUnix = url => {
-		return !(/[a-zA-Z]/g.test(url))
-	};
+    var unix = 0,
+        natural = '',
+        isUnix = url => /^(|-)\d+$/g.test(url)
+        dateFormat = 'D MMMM YYYY';
 
-	const inputIsDate = url => {
-		return false;
-	}
+    // Decode and replace junk in URL
+    url = decodeURI(req.url.substr(1))
 
-	const url = req.url.substr(1);
-	console.log('requested something: ' + url)
+    var d = new Date(url)
 
-	var unix = 0,
-		natural = '';
+    // Evaluate as UNIX timestamp
+    if(isUnix(url)) {
+        unix = Number(url);
+        natural = moment(moment.unix(url)._d).format(dateFormat);
 
-	if (inputIsUnix(url)) {	
-		unix = Number(url);
-		natural = moment(moment.unix(url)._d).format('MMMM D, YYYY')
-	} 
-	else if (inputIsDate(url)) {
-		
-		console.log('NOT VALID UNIX TIMESTAMP!')
-	} 
-	else {
-		console.log('NOT VALID UNIX TIMESTAMP!')
-		console.log('here:', moment(url, 'MMMM D, YYYY').toDate());
-		unix = null;
-		natural = null;
-	}
+    } else 
+    // Evaluate as date
 
-	res.send({'unixTimestamp': unix, 'naturalLanguageDate': natural})
+    if (isNaN(d.getTime())) {
+        // date is not valid
+        unix = null;
+        natural = null;
+    } else {
+        // date is valid
+        unix = Math.round(new Date(d).getTime() / 1000);
+        natural = moment(d).format(dateFormat);
+    }
+
+    res.send({'unixTimestamp': unix, 'naturalLanguageDate': natural})
 });
 
 var port = Number(process.env.PORT || 3000);
 
 app.listen(port, () => {
-  	console.log('Example app listening on port 3000!');
+    console.log('Example app listening on port 3000!');
 });
