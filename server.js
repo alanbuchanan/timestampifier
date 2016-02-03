@@ -10,6 +10,8 @@ app.get(/./g, (req, res) => {
 	res.send({unixTimestamp: 'hello', naturalLanguageDate: 'welt'})
 });
 
-app.listen(3000, () => {
+var port = Number(process.env.PORT || 3000);
+
+app.listen(port, () => {
   	console.log('Example app listening on port 3000!');
 });
