@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
     res.sendFile('./html/index.html');
 });
 
-app.get(/./g, (req, res) => {
+app.get(/.+/g, (req, res) => {
 
     var unix = 0,
         natural = '',
@@ -28,7 +28,6 @@ app.get(/./g, (req, res) => {
 
     } else 
     // Evaluate as date
-
     if (isNaN(d.getTime())) {
         // date is not valid
         unix = null;
@@ -39,11 +38,9 @@ app.get(/./g, (req, res) => {
         natural = moment(d).format(dateFormat);
     }
 
-    res.send({'unixTimestamp': unix, 'naturalLanguageDate': natural})
+    res.send({'unixTimestamp': unix, 'naturalLanguageDate': natural});
 });
 
 var port = Number(process.env.PORT || 3000);
 
-app.listen(port, () => {
-    console.log('Example app listening on port 3000!');
-});
+app.listen(port);
