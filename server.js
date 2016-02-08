@@ -9,17 +9,16 @@ app.get('/', (req, res) => {
     res.sendFile('./html/index.html');
 });
 
-app.get(/.+/g, (req, res) => {
+app.get('/:string', (req, res) => {
 
     var unix = 0,
         natural = '',
         isUnix = url => /^(|-)\d+$/g.test(url)
         dateFormat = 'D MMMM YYYY';
-
     // Decode and replace junk in URL
-    url = decodeURI(req.url.substr(1))
+    url = decodeURI(req.params.string);
 
-    var d = new Date(url)
+    var d = new Date(url);
 
     // Evaluate as UNIX timestamp
     if(isUnix(url)) {
@@ -41,6 +40,6 @@ app.get(/.+/g, (req, res) => {
     res.send({'unixTimestamp': unix, 'naturalLanguageDate': natural});
 });
 
-var port = Number(process.env.PORT || 3000);
+var port = Number(process.env.PORT || 3001);
 
 app.listen(port);
